@@ -1,0 +1,70 @@
+{% url 'editar_direccion' %}
+{% url 'editar_tarjeta' %}
+
+views.py
+
+class EditarTarjetaView(LoginRequiredMixin, UpdateView):
+    redirect_field_name = "/tienda/login/"
+    model = TarjetaPago
+    form_class = TarjetasForm
+    template_name = 'tienda/tarjetas.html'
+    success_url = reverse_lazy('perfil_cliente')
+
+    def get(self, request, *args, **kwargs):
+        tarjeta, created = TarjetaPago.objects.get_or_create(user=request.user)
+        form = TarjetasForm(instance=tarjeta)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        tarjeta, created = TarjetaPago.objects.get_or_create(user=request.user)
+        form = TarjetasForm(request.POST, instance=tarjeta)
+        if form.is_valid():
+            form.save()
+            return redirect('menu')
+        return render(request, self.template_name, {'form': form})
+
+forms.py
+
+class TarjetasForm(forms.ModelForm):
+    class Meta:
+        model = TarjetaPago
+        fields = ['nombre_id', 'tipo', 'titular', 'caducidad']
+
+models.py
+
+class TarjetaPago(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    nombre_id = models.CharField(max_length=50)
+    tipo = models.CharField(max_length=50)
+    titular = models.CharField(max_length=100)
+    caducidad = models.DateField()
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name_plural = "Tarjetas"
+
+IntegrityError at /tienda/tienda/editar_tarjeta/
+null value in column "caducidad" of relation "tienda_tarjetapago" violates not-null constraint
+DETAIL:  Failing row contains (3, , , , null, 2).
+Request Method:	GET
+Request URL:	http://127.0.0.1:8000/tienda/tienda/editar_tarjeta/
+Django Version:	4.1.13
+Exception Type:	IntegrityError
+Exception Value:	
+null value in column "caducidad" of relation "tienda_tarjetapago" violates not-null constraint
+DETAIL:  Failing row contains (3, , , , null, 2).
+Exception Location:	C:\Users\cicloM\vms\tienda-2-0-MrBlueSky2001\Lib\site-packages\django\db\backends\utils.py, line 89, in _execute
+Raised during:	tienda.views.EditarTarjetaView
+Python Executable:	C:\Users\cicloM\vms\tienda-2-0-MrBlueSky2001\Scripts\python.exe
+Python Version:	3.12.0
+Python Path:	
+['C:\\Users\\cicloM\\tienda-2-0-MrBlueSky2001',
+ 'C:\\Users\\cicloM\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip',
+ 'C:\\Users\\cicloM\\AppData\\Local\\Programs\\Python\\Python312\\DLLs',
+ 'C:\\Users\\cicloM\\AppData\\Local\\Programs\\Python\\Python312\\Lib',
+ 'C:\\Users\\cicloM\\AppData\\Local\\Programs\\Python\\Python312',
+ 'C:\\Users\\cicloM\\vms\\tienda-2-0-MrBlueSky2001',
+ 'C:\\Users\\cicloM\\vms\\tienda-2-0-MrBlueSky2001\\Lib\\site-packages']
+Server time:	Thu, 01 Feb 2024 14:50:15 +0100

@@ -1,0 +1,427 @@
+Paso 2: Crear un nuevo proyecto Angular
+Una vez que Angular CLI está instalado, puedes generar un nuevo proyecto Angular con el siguiente comando:
+
+arduino
+Copy code
+ng new nombre-del-proyecto
+Sustituye "nombre-del-proyecto" por el nombre que desees para tu proyecto.
+
+Paso 3: Navegar al directorio del proyecto
+Ve al directorio recién creado usando el comando cd nombre-del-proyecto.
+
+Paso 4: Crear un componente para la calculadora
+Ahora, puedes generar un nuevo componente para la calculadora usando Angular CLI:
+
+Copy code
+ng generate component calculadora
+Paso 5: Implementar la lógica de la calculadora
+En el archivo calculadora.component.ts, puedes escribir la lógica de la calculadora. Aquí tienes un ejemplo básico:
+
+typescript
+Copy code
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-calculadora',
+  templateUrl: './calculadora.component.html',
+  styleUrls: ['./calculadora.component.css']
+})
+export class CalculadoraComponent {
+  resultado: number = 0;
+  numero1: number;
+  numero2: number;
+
+  sumar(): void {
+    this.resultado = this.numero1 + this.numero2;
+  }
+
+  restar(): void {
+    this.resultado = this.numero1 - this.numero2;
+  }
+
+  multiplicar(): void {
+    this.resultado = this.numero1 * this.numero2;
+  }
+
+  dividir(): void {
+    if (this.numero2 !== 0) {
+      this.resultado = this.numero1 / this.numero2;
+    } else {
+      this.resultado = NaN;
+    }
+  }
+}
+Paso 6: Crear la interfaz de usuario de la calculadora
+En el archivo calculadora.component.html, puedes escribir la interfaz de usuario de la calculadora. Aquí tienes un ejemplo básico:
+
+html
+Copy code
+<div>
+  <input type="number" [(ngModel)]="numero1">
+  <input type="number" [(ngModel)]="numero2">
+  <button (click)="sumar()">Sumar</button>
+  <button (click)="restar()">Restar</button>
+  <button (click)="multiplicar()">Multiplicar</button>
+  <button (click)="dividir()">Dividir</button>
+  <p>Resultado: {{ resultado }}</p>
+</div>
+Paso 7: Añadir estilos (opcional)
+Puedes añadir estilos a tu calculadora en el archivo calculadora.component.css.
+
+Paso 8: Usar el componente de la calculadora
+Por último, debes añadir el componente de la calculadora a la vista principal de tu aplicación. Puedes hacerlo en el archivo app.component.html o en cualquier otro componente donde desees mostrar la calculadora:
+
+html
+Copy code
+<app-calculadora></app-calculadora>
+¡Y eso es todo! Ahora deberías tener una calculadora funcional en tu proyecto Angular.
+
+
+Angular 16
+
+Paso 2: Crear un componente para la calculadora
+Una vez que hayas creado tu proyecto, navega al directorio del proyecto y crea un nuevo componente para la calculadora:
+
+bash
+Copy code
+cd nombre-del-proyecto
+ng generate component calculadora
+Paso 3: Implementar la lógica de la calculadora
+En el archivo calculadora.component.ts, puedes escribir la lógica de la calculadora. Aquí tienes un ejemplo básico:
+
+typescript
+Copy code
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-calculadora',
+  templateUrl: './calculadora.component.html',
+  styleUrls: ['./calculadora.component.css']
+})
+export class CalculadoraComponent {
+  resultado: number = 0;
+  numero1: number;
+  numero2: number;
+
+  sumar(): void {
+    this.resultado = this.numero1 + this.numero2;
+  }
+
+  restar(): void {
+    this.resultado = this.numero1 - this.numero2;
+  }
+
+  multiplicar(): void {
+    this.resultado = this.numero1 * this.numero2;
+  }
+
+  dividir(): void {
+    if (this.numero2 !== 0) {
+      this.resultado = this.numero1 / this.numero2;
+    } else {
+      this.resultado = NaN;
+    }
+  }
+}
+Paso 4: Crear la interfaz de usuario de la calculadora
+En el archivo calculadora.component.html, puedes escribir la interfaz de usuario de la calculadora. Aquí tienes un ejemplo básico:
+
+html
+Copy code
+<div>
+  <input type="number" [(ngModel)]="numero1">
+  <input type="number" [(ngModel)]="numero2">
+  <button (click)="sumar()">Sumar</button>
+  <button (click)="restar()">Restar</button>
+  <button (click)="multiplicar()">Multiplicar</button>
+  <button (click)="dividir()">Dividir</button>
+  <p>Resultado: {{ resultado }}</p>
+</div>
+Paso 5: Añadir estilos (opcional)
+Puedes añadir estilos a tu calculadora en el archivo calculadora.component.css.
+
+Paso 6: Usar el componente de la calculadora
+Por último, debes añadir el componente de la calculadora a la vista principal de tu aplicación. Puedes hacerlo en el archivo app.component.html o en cualquier otro componente donde desees mostrar la calculadora:
+
+html
+Copy code
+<app-calculadora></app-calculadora>
+Con estos pasos, deberías tener una calculadora funcional en tu proyecto Angular. Recuerda adaptar cualquier cambio necesario dependiendo de la versión específica de Angular que estés utilizando.
+
+
+NGFOR
+
+Entendido. Vamos a modificar la calculadora para que tenga un historial de operaciones utilizando ngFor. Aquí tienes cómo puedes hacerlo:
+
+Paso 1: Modificar el componente de la calculadora para incluir un historial
+typescript
+Copy code
+import { Component } from '@angular/core';
+
+interface Operacion {
+  numero1: number;
+  numero2: number;
+  resultado: number;
+  operacion: string;
+}
+
+@Component({
+  selector: 'app-calculadora',
+  templateUrl: './calculadora.component.html',
+  styleUrls: ['./calculadora.component.css']
+})
+export class CalculadoraComponent {
+  resultado: number = 0;
+  numero1: number;
+  numero2: number;
+  historial: Operacion[] = [];
+
+  sumar(): void {
+    this.resultado = this.numero1 + this.numero2;
+    this.guardarOperacion('+');
+  }
+
+  restar(): void {
+    this.resultado = this.numero1 - this.numero2;
+    this.guardarOperacion('-');
+  }
+
+  multiplicar(): void {
+    this.resultado = this.numero1 * this.numero2;
+    this.guardarOperacion('*');
+  }
+
+  dividir(): void {
+    if (this.numero2 !== 0) {
+      this.resultado = this.numero1 / this.numero2;
+      this.guardarOperacion('/');
+    } else {
+      this.resultado = NaN;
+    }
+  }
+
+  private guardarOperacion(op: string): void {
+    const operacion: Operacion = {
+      numero1: this.numero1,
+      numero2: this.numero2,
+      resultado: this.resultado,
+      operacion: op
+    };
+    this.historial.push(operacion);
+  }
+}
+Paso 2: Modificar la interfaz de usuario para mostrar el historial
+html
+Copy code
+<div>
+  <input type="number" [(ngModel)]="numero1">
+  <input type="number" [(ngModel)]="numero2">
+  <button (click)="sumar()">Sumar</button>
+  <button (click)="restar()">Restar</button>
+  <button (click)="multiplicar()">Multiplicar</button>
+  <button (click)="dividir()">Dividir</button>
+  <p>Resultado: {{ resultado }}</p>
+
+  <h2>Historial</h2>
+  <ul>
+    <li *ngFor="let operacion of historial">
+      {{ operacion.numero1 }} {{ operacion.operacion }} {{ operacion.numero2 }} = {{ operacion.resultado }}
+    </li>
+  </ul>
+</div>
+
+
+PADRE E HIJO(HISTORIAL)
+
+Paso 1: Crear el componente del historial
+Primero, necesitas generar un nuevo componente para el historial. Puedes hacerlo con Angular CLI:
+
+bash
+Copy code
+ng generate component historial
+Paso 2: Actualizar el componente de la calculadora
+En el componente de la calculadora, debes emitir un evento cada vez que se realiza una operación. El componente del historial escuchará este evento y actualizará su lista de operaciones.
+
+typescript
+Copy code
+import { Component } from '@angular/core';
+
+interface Operacion {
+  numero1: number;
+  numero2: number;
+  resultado: number;
+  operacion: string;
+}
+
+@Component({
+  selector: 'app-calculadora',
+  templateUrl: './calculadora.component.html',
+  styleUrls: ['./calculadora.component.css']
+})
+export class CalculadoraComponent {
+  resultado: number = 0;
+  numero1: number;
+  numero2: number;
+  historial: Operacion[] = [];
+
+  sumar(): void {
+    this.resultado = this.numero1 + this.numero2;
+    this.guardarOperacion('+');
+  }
+
+  restar(): void {
+    this.resultado = this.numero1 - this.numero2;
+    this.guardarOperacion('-');
+  }
+
+  multiplicar(): void {
+    this.resultado = this.numero1 * this.numero2;
+    this.guardarOperacion('*');
+  }
+
+  dividir(): void {
+    if (this.numero2 !== 0) {
+      this.resultado = this.numero1 / this.numero2;
+      this.guardarOperacion('/');
+    } else {
+      this.resultado = NaN;
+    }
+  }
+
+  private guardarOperacion(op: string): void {
+    const operacion: Operacion = {
+      numero1: this.numero1,
+      numero2: this.numero2,
+      resultado: this.resultado,
+      operacion: op
+    };
+    this.historial.push(operacion);
+  }
+}
+Paso 3: Actualizar la interfaz de usuario
+Asegúrate de agregar el componente del historial a la plantilla de la calculadora:
+
+html
+Copy code
+<div>
+  <input type="number" [(ngModel)]="numero1">
+  <input type="number" [(ngModel)]="numero2">
+  <button (click)="sumar()">Sumar</button>
+  <button (click)="restar()">Restar</button>
+  <button (click)="multiplicar()">Multiplicar</button>
+  <button (click)="dividir()">Dividir</button>
+  <p>Resultado: {{ resultado }}</p>
+
+  <app-historial [historial]="historial"></app-historial>
+</div>
+Paso 4: Configurar el componente del historial
+Dentro del componente del historial, necesitas recibir el historial como una entrada y mostrarlo en la plantilla:
+
+typescript
+Copy code
+import { Component, Input } from '@angular/core';
+
+interface Operacion {
+  numero1: number;
+  numero2: number;
+  resultado: number;
+  operacion: string;
+}
+
+@Component({
+  selector: 'app-historial',
+  templateUrl: './historial.component.html',
+  styleUrls: ['./historial.component.css']
+})
+export class HistorialComponent {
+  @Input() historial: Operacion[];
+}
+html
+Copy code
+<h2>Historial</h2>
+<ul>
+  <li *ngFor="let operacion of historial">
+    {{ operacion.numero1 }} {{ operacion.operacion }} {{ operacion.numero2 }} = {{ operacion.resultado }}
+  </li>
+</ul>
+
+
+AAAAAAAAAAAAAAAAAAAAAAAA
+
+Aquí te muestro cómo puedes implementar la mini calculadora en Angular 16:
+
+Primero, necesitas asegurarte de tener Angular CLI instalado y crear un nuevo proyecto de Angular:
+
+bash
+Copy code
+ng new mini-calculadora
+cd mini-calculadora
+Luego, dentro de tu proyecto, puedes crear un nuevo componente llamado "calculadora":
+
+bash
+Copy code
+ng generate component calculadora
+Una vez que tengas la estructura básica, puedes modificar el HTML y el TypeScript del componente "calculadora" para implementar la funcionalidad de la mini calculadora.
+
+calculadora.component.html:
+
+html
+Copy code
+<div class="container">
+  <h1>Mini Calculadora</h1>
+  <div class="form-group">
+    <label for="numero1">Número 1:</label>
+    <input type="number" class="form-control" id="numero1" [(ngModel)]="numero1">
+  </div>
+  <div class="form-group">
+    <label for="numero2">Número 2:</label>
+    <input type="number" class="form-control" id="numero2" [(ngModel)]="numero2">
+  </div>
+  <button class="btn btn-primary" (click)="sumar()">Sumar</button>
+  <button class="btn btn-primary" (click)="restar()">Restar</button>
+  <div *ngIf="resultado !== null" class="alert alert-success mt-3">
+    Resultado: {{ resultado }}
+  </div>
+</div>
+calculadora.component.ts:
+
+typescript
+Copy code
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-calculadora',
+  templateUrl: './calculadora.component.html',
+  styleUrls: ['./calculadora.component.css']
+})
+export class CalculadoraComponent {
+  numero1: number = 0;
+  numero2: number = 0;
+  resultado: number | null = null;
+
+  sumar() {
+    this.resultado = this.numero1 + this.numero2;
+  }
+
+  restar() {
+    this.resultado = this.numero1 - this.numero2;
+  }
+}
+Asegúrate de que tengas Bootstrap instalado en tu proyecto. Puedes hacerlo a través de npm:
+
+bash
+Copy code
+npm install bootstrap
+Luego, importa el archivo CSS de Bootstrap en tu archivo angular.json:
+
+json
+Copy code
+"styles": [
+  "src/styles.css",
+  "node_modules/bootstrap/dist/css/bootstrap.min.css"
+],
+Finalmente, para visualizar la calculadora, simplemente incluye el componente "calculadora" en el componente principal o en cualquier otro componente donde desees mostrarla.
+
+No olvides subir tu código a GitHub y luego proporcionar el enlace en Moodle.
+
+

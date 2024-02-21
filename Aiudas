@@ -1,0 +1,110 @@
+models.py
+
+class Compra(models.Model):
+    producto = models.ForeignKey(Producto, models.PROTECT)
+    user = models.ForeignKey(Cliente, on_delete=models.PROTECT)
+    fecha = models.DateField(default=timezone.now)
+    unidades = models.PositiveIntegerField()
+    importe = models.DecimalField(max_digits=14, decimal_places=2)
+    iva = models.DecimalField(max_digits=4, decimal_places=2, default=0.21)
+    comentario = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.username} {self.fecha}'
+
+    class Meta:
+        unique_together = ['fecha', 'producto', 'user']
+        verbose_name_plural = "Compras"
+
+forms.py
+
+class CompraForm(forms.ModelForm):
+    comentario = forms.CharField(widget=forms.Textarea, required=False)
+    class Meta:
+        model = Compra
+        fields = ['producto', 'unidades', 'importe', 'comentario']
+
+views.py
+
+class CheckoutView(View):
+    template_name = 'tienda/checkout.html'
+    form_class = CompraForm
+
+    @method_decorator(transaction.atomic)
+    @method_decorator(login_required(login_url='/tienda/registro/login/'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, request, pk):
+        producto = get_object_or_404(Producto, pk=pk)
+        form = self.form_class()
+        comentarios = Compra.objects.filter(producto=producto).exclude(comentario__exact='').order_by('-fecha')
+        return render(request, self.template_name, {'form': form, 'producto': producto, 'comentarios': comentarios})
+
+    def post(self, request, pk):
+        producto = get_object_or_404(Producto, pk=pk)
+        cliente = get_object_or_404(Cliente, user=request.user)
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            unidades = form.cleaned_data['unidades']
+            comentario = form.cleaned_data['comentario']
+
+            if unidades <= producto.unidades:
+                producto.unidades -= unidades
+                producto.save()
+
+                compra = Compra(
+                    producto=producto,
+                    user=cliente,
+                    unidades=unidades,
+                    importe=unidades * producto.precio,
+                    fecha=timezone.now(),
+                    comentario=comentario
+                )
+                compra.save()
+                cliente.saldo -= compra.importe
+                cliente.save()
+
+                return redirect('welcome')
+
+        comentarios = Compra.objects.filter(producto=producto).exclude(comentario__exact='').order_by('-fecha')
+        return render(request, self.template_name, {'form': form, 'producto': producto, 'comentarios': comentarios})
+
+checkout.html
+
+{% extends 'tienda/base.html' %}
+{% load i18n %}
+{% block content %}
+    <div class="container bg-secondary" style="--bs-bg-opacity: .5;">
+        <div class="text-start">
+            <h2>{% trans 'Productos' %} {{ producto.nombre }}</h2>
+            {% trans 'Modelos' %}: {{ producto.modelo }} / {% trans 'Unidades' %}: {{ producto.unidades }}
+            <br>
+            {% trans 'Precio' %}: {{ producto.precio }}€ / {% trans 'Marca' %}: {{ producto.marca }}
+            <br>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_div }}
+                <br>
+                <button type="submit">{% trans 'Compra' %}</button>
+            </form>
+            <div>
+                <h3>{% trans 'Comentarios sobre' %} {{ producto.nombre }} {{ producto.modelo }}</h3>
+                {% if comentarios %}
+                    <ul>
+                        {% for comentario in comentarios %}
+                            <li>{{ comentario.user.username }} ({{ comentario.fecha }}): {{ comentario.comentario }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>{% trans 'No hay comentarios aún' %}.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+urls.py
+
+path('tienda/checkout/<int:pk>/', CheckoutView.as_view(), name='checkout'),
